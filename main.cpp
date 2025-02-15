@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "box2d/box2d.h"
 
+#include <vector>
 #include <assert.h>
 
 // This shows how to use Box2D v3 with raylib.
@@ -17,7 +18,7 @@ void DrawEntity(const Entity* entity)
 {
 	// The boxes were created centered on the bodies, but raylib draws textures starting at the top left corner.
 	// b2Body_GetWorldPoint gets the top left corner of the box accounting for rotation.
-	b2Vec2 p = b2Body_GetWorldPoint(entity->bodyId, (b2Vec2) { -entity->extent.x, -entity->extent.y });
+	b2Vec2 p = b2Body_GetWorldPoint(entity->bodyId, b2Vec2{ -entity->extent.x, -entity->extent.y });
 	b2Rot rotation = b2Body_GetRotation(entity->bodyId);
 	float radians = b2Rot_GetAngle(rotation);
 
@@ -70,7 +71,7 @@ int main(void)
 	{
 		Entity* entity = groundEntities + i;
 		b2BodyDef bodyDef = b2DefaultBodyDef();
-		bodyDef.position = (b2Vec2){ (2.0f * i + 2.0f) * groundExtent.x, height - groundExtent.y - 100.0f};
+		bodyDef.position = b2Vec2{ (2.0f * i + 2.0f) * groundExtent.x, height - groundExtent.y - 100.0f};
 
 		// I used this rotation to test the world to screen transformation
 		//bodyDef.rotation = b2MakeRot(0.25f * b2_pi * i);
@@ -82,7 +83,7 @@ int main(void)
 		b2CreatePolygonShape(entity->bodyId, &shapeDef, &groundPolygon);
 	}
 
-	Entity boxEntities[BOX_COUNT] = { 0 };
+	std::vector<Entity*> boxes;
 	int boxIndex = 0;
 	for (int i = 0; i < 4; ++i)
 	{
@@ -93,10 +94,10 @@ int main(void)
 			float x = 0.5f * width + (3.0f * j - i - 3.0f) * boxExtent.x;
 			assert(boxIndex < BOX_COUNT);
 
-			Entity* entity = boxEntities + boxIndex;
+			Entity* entity = new Entity();
 			b2BodyDef bodyDef = b2DefaultBodyDef();
 			bodyDef.type = b2_dynamicBody;
-			bodyDef.position = (b2Vec2){ x, y };
+			bodyDef.position = b2Vec2{ x, y };
 			entity->bodyId = b2CreateBody(worldId, &bodyDef);
 			entity->texture = boxTexture;
 			entity->extent = boxExtent;
@@ -104,6 +105,7 @@ int main(void)
 			b2CreatePolygonShape(entity->bodyId, &shapeDef, &boxPolygon);
 
 			boxIndex += 1;
+			boxes.push_back(entity);
 		}
 	}
 
@@ -122,6 +124,23 @@ int main(void)
 			b2World_Step(worldId, deltaTime, 4);
 		}
 
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+		{
+			Vector2 mousePos = GetMousePosition();
+
+			Entity* entity = new Entity();
+			b2BodyDef bodyDef = b2DefaultBodyDef();
+			bodyDef.type = b2_dynamicBody;
+			bodyDef.position = b2Vec2{ mousePos.x, mousePos.y };
+			entity->bodyId = b2CreateBody(worldId, &bodyDef);
+			entity->texture = boxTexture;
+			entity->extent = boxExtent;
+			b2ShapeDef shapeDef = b2DefaultShapeDef();
+			b2CreatePolygonShape(entity->bodyId, &shapeDef, &boxPolygon);
+
+			boxes.push_back(entity);
+		}
+
 		BeginDrawing();
 		ClearBackground(DARKGRAY);
 
@@ -135,9 +154,9 @@ int main(void)
 			DrawEntity(groundEntities + i);
 		}
 
-		for (int i = 0; i < BOX_COUNT; ++i)
+		for (const auto& box : boxes)
 		{
-			DrawEntity(boxEntities + i);
+			DrawEntity(box);
 		}
 
 		EndDrawing();
