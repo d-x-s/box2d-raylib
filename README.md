@@ -11,4 +11,5 @@ To build and run this project:
 6) Build
 7) Launch the generated `game.exe` in `build/Debug`
 
+![gif](demo.gif)
 ![screenshot](screenshot.png)
