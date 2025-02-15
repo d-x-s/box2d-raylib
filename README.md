@@ -1,27 +1,14 @@
 # box2d-raylib
-This project shows how to integrate Box2D with Raylib. Raylib provides the windowing and drawing while Box2D provides rigid body physics.
-- https://www.raylib.com/
-- https://box2d.org/
+This project is a fork of Erin Catto's box2d/raylib demonstration.
+I have converted the project to C++ and added a demo feature that allows users to spawn more boxes with left click.
 
-I use CMake and FetchContent to bring together box2d and raylib with no submodules, packages, or file copying. No library configuration is needed.
-
-If you are not familiar with CMake, I recommend to spend some time getting familiar with it because it is very common in open source programming. Here are some links to get you started:
-- https://cmake.org/
-- https://cmake.org/cmake/help/latest/guide/user-interaction/index.html
-- https://code.visualstudio.com/docs/cpp/cmake-linux
-
-I recommend to get started with cmake-gui which basically a UI on top of the command line CMake. I've had a good experience using VS Code and CMake. I've been able to build, test, and debug Box2D on Windows, macOS, and Linux using VS Code. I even used it to build Box2D on Raspberry Pi.
-
-The demo shows how to setup a simulation coordinate system and transform the results to the screen. I also left some notes showing how I verified the transformation.
-
-Feel free to use this project as a starting point for making a game using raylib and Box2D.
+To build and run this project:
+1) Clone the repo
+2) In the root folder do `mkdir build`
+3) `cd build`
+4) `cmake ..`
+5) Open `game.sln` in Visual Studio
+6) Build
+7) Launch the generated `game.exe` in `build/Debug`
 
 ![screenshot](screenshot.png)
-
-
-## Emscripten (work in progress)
-source ../emsdk/emsdk_env.sh
-mkdir build
-emcmake cmake -S . -B build -DPLATFORM=Web
-cd build
-mingw32-make.exe PLATFORM=PLATFORM_WEB -B
